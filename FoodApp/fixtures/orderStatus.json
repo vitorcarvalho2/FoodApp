@@ -1,27 +1,27 @@
 [
     {
-        "model": "FoodApp.ordersstatus",
+        "model": "FoodApp.orderstatus",
         "pk": 1,
         "fields": {
             "name": "Pending"
         }
     },
     {
-        "model": "FoodApp.ordersstatus",
+        "model": "FoodApp.orderstatus",
         "pk": 2,
         "fields": {
             "name": "In Progress"
         }
     },
     {
-        "model": "FoodApp.ordersstatus",
+        "model": "FoodApp.orderstatus",
         "pk": 3,
         "fields": {
             "name": "Delivered"
         }
     },
     {
-        "model": "FoodApp.ordersstatus",
+        "model": "FoodApp.orderstatus",
         "pk": 4,
         "fields": {
             "name": "Cancelled"

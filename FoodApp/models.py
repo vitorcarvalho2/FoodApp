@@ -30,6 +30,10 @@ class Restaurant(models.Model):
 class Roles(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
+    class Meta:
+        verbose_name = "Role"
+        verbose_name_plural = "Roles"
+
     def __str__(self):
         return self.name
 class Address(models.Model):
@@ -80,20 +84,20 @@ class RestaurantReview(models.Model):
 class Order(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    status = models.ForeignKey('OrdersStatus', on_delete=models.SET_NULL, null=True)
+    status = models.ForeignKey('OrderStatus', on_delete=models.SET_NULL, null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class OrdersStatus(models.Model):
+class OrderStatus(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     class Meta:
-        verbose_name = "OrdersStatus"
-        verbose_name_plural = "OrdersStatus"
+        verbose_name = "Order Status"
+        verbose_name_plural = "Order Status"
 
     def __str__(self):
-        return f"Order #{self.id} by {self.user_id.username} at {self.restaurant_id.name}"
+        return self.name
     
 class Product(models.Model):
     restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
@@ -121,8 +125,8 @@ class OptionGroups(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "OptionGroups"
-        verbose_name_plural = "OptionGroups"
+        verbose_name = "Option Groups"
+        verbose_name_plural = "Option Groups"
 
     def __str__(self):
         return f"{self.name} - {self.product_id.name}"
@@ -151,8 +155,8 @@ class OrderItems(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "OrderItems"
-        verbose_name_plural = "OrderItems"
+        verbose_name = "Order Items"
+        verbose_name_plural = "Order Items"
     def __str__(self):
         return f"{self.quantity}x {self.product_id.name} for Order #{self.order_id.id}"
     
@@ -161,8 +165,8 @@ class OrderItemOptions(models.Model):
     option_id = models.ForeignKey(Options, on_delete=models.CASCADE)
     
     class Meta:
-        verbose_name = "OrderItemOptions"
-        verbose_name_plural = "OrderItemOptions"
+        verbose_name = "Order Item Options"
+        verbose_name_plural = "Order Item Options"
 
     def __str__(self):
         return f"{self.option_id.name} for {self.order_item_id.product_id.name}"
@@ -174,8 +178,8 @@ class FoodCategory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "FoodCategory"
-        verbose_name_plural = "FoodCategories"
+        verbose_name = "Food Category"
+        verbose_name_plural = "Food Categories"
 
     def __str__(self):
         return self.name
@@ -185,8 +189,8 @@ class RestaurantCategory(models.Model):
     food_category_id = models.ForeignKey(FoodCategory, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = "RestaurantCategory"
-        verbose_name_plural = "RestaurantCategories"
+        verbose_name = "Restaurant Category"
+        verbose_name_plural = "Restaurant Categories"
         constraints = [
             models.UniqueConstraint(
                 fields=['restaurant_id', 'food_category_id'],
