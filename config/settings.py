@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--9jad*p18dj@es(d*g6=%0ra=t&fk@z89zd42weo6_n#hufh5t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'FoodApp'
 ]
 

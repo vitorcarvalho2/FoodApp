@@ -3,7 +3,7 @@ from django.db.models import Q
 
 class User(models.Model):
     username = models.CharField(max_length=100)
-    role = models.CharField(max_length=50)
+    role = models.ForeignKey('Roles', on_delete=models.SET_NULL, null=True)
     phone = models.CharField(max_length=15)
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=100)
@@ -13,7 +13,7 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
-    
+
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=100)
@@ -26,6 +26,12 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
     
+
+class Roles(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 class Address(models.Model):
     street = models.CharField(max_length=200)
     number = models.CharField(max_length=20)
@@ -44,6 +50,8 @@ class Address(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        verbose_name = "Address"
+        verbose_name_plural = "Addresses"
         constraints = [
             models.CheckConstraint(
                 condition=(
@@ -56,7 +64,7 @@ class Address(models.Model):
     def __str__(self):
         return f"{self.street}, {self.number} - {self.city}/{self.state}"
 
-class RestaurntReview(models.Model):
+class RestaurantReview(models.Model):
     restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField()
@@ -67,19 +75,27 @@ class RestaurntReview(models.Model):
     def __str__(self):
         return f"Review by {self.user_id.username} for {self.restaurant_id.name}"
     
+    
 
-class Orders(models.Model):
+class Order(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    status = models.Choices('pending', 'in_progress', 'completed', 'cancelled')
+    status = models.ForeignKey('OrdersStatus', on_delete=models.SET_NULL, null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class OrdersStatus(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "OrdersStatus"
+        verbose_name_plural = "OrdersStatus"
+
     def __str__(self):
         return f"Order #{self.id} by {self.user_id.username} at {self.restaurant_id.name}"
     
-class Products(models.Model):
+class Product(models.Model):
     restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -88,17 +104,25 @@ class Products(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
+
     def __str__(self):
         return f"{self.name} - {self.restaurant_id.name}"
     
 class OptionGroups(models.Model):
-    product_id = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     is_required = models.BooleanField(default=False)
     min_selection = models.IntegerField(default=0)
     max_selection = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "OptionGroups"
+        verbose_name_plural = "OptionGroups"
 
     def __str__(self):
         return f"{self.name} - {self.product_id.name}"
@@ -111,23 +135,34 @@ class Options(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Options"
+        verbose_name_plural = "Options"
+
     def __str__(self):
         return f"{self.name} - {self.option_group_id.name}"
     
 class OrderItems(models.Model):
-    order_id = models.ForeignKey(Orders, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Products, on_delete=models.CASCADE)
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "OrderItems"
+        verbose_name_plural = "OrderItems"
     def __str__(self):
         return f"{self.quantity}x {self.product_id.name} for Order #{self.order_id.id}"
     
 class OrderItemOptions(models.Model):
     order_item_id = models.ForeignKey(OrderItems, on_delete=models.CASCADE)
     option_id = models.ForeignKey(Options, on_delete=models.CASCADE)
+    
+    class Meta:
+        verbose_name = "OrderItemOptions"
+        verbose_name_plural = "OrderItemOptions"
 
     def __str__(self):
         return f"{self.option_id.name} for {self.order_item_id.product_id.name}"
@@ -138,6 +173,10 @@ class FoodCategory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "FoodCategory"
+        verbose_name_plural = "FoodCategories"
+
     def __str__(self):
         return self.name
     
@@ -146,6 +185,8 @@ class RestaurantCategory(models.Model):
     food_category_id = models.ForeignKey(FoodCategory, on_delete=models.CASCADE)
 
     class Meta:
+        verbose_name = "RestaurantCategory"
+        verbose_name_plural = "RestaurantCategories"
         constraints = [
             models.UniqueConstraint(
                 fields=['restaurant_id', 'food_category_id'],

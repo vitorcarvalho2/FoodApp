@@ -1,0 +1,16 @@
+[
+    {
+        "model": "FoodApp.roles",
+        "pk": 2,
+        "fields": {
+            "name": "user"
+        }
+    },
+    {
+        "model": "FoodApp.roles",
+        "pk": 3,
+        "fields": {
+            "name": "restaurant_owner"
+        }
+    }
+]
