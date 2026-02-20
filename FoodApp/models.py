@@ -10,7 +10,8 @@ class User(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    cpf = models.CharField(max_length=14, unique=True, blank=True, null=True)
+    
     def __str__(self):
         return self.username
 
